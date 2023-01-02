@@ -34,11 +34,7 @@ def calculate():
                                  result2=second_num,
                                  developer_name= 'Matt'
                               )
-
         lcm, result1, result2, developer_name
-
-
-
     else:
         return "Since this is a GET request, LCM has not been calculated"
 # Add a statement to run the Flask application which can be debugged.
