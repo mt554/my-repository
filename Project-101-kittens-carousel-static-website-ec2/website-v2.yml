@@ -35,4 +35,5 @@ Resources:
           yum update -y
           yum install httpd -y
           cd /var/www/html
+          
 # Outputs:
