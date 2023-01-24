@@ -1,0 +1,9 @@
+
+
+from falsk import Flask, render_template, LogicalID:
+  Type: AWS::ApiGateway::RequestValidator
+  Properties:
+    Name: "String"
+    RestApiId: "String" # Required
+    ValidateRequestBody: false
+    ValidateRequestParameters: false
