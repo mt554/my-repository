@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Build a Static webside with a cloudfront Distribution
+  
+Parameters:
+  
+  pKittenDomainName:
+    Description: Full sub-domain for website
+    Type: String
+  
+  pHostedZoneId:
+    Description: Hosted zone id for public hosted zone
+    Type: AWS::Route53::HostedZone::Id
+
+
+Resources:
+  rKittenBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref pKittenDomainName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  rBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref rKittenBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: PublicReadPolicy
+        Statement:
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow
+          Principal: "*"
+          Action: s3:GetObject
+          Resource: !Join [ '', [ !GetAtt rKittenBucket.Arn, '/*' ] ]
+          
+  rCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref pKittenDomainName
+      DomainValidationOptions:
+      - DomainName: !Ref pKittenDomainName
+        HostedZoneId: !Ref pHostedZoneId
+      ValidationMethod: 'DNS'   
+
+  rRoute53Record:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref pHostedZoneId
+      RecordSets:
+      - AliasTarget: 
+          DNSName: !GetAtt rKittenBucket.DomainName
+          HostedZoneId: !Ref pHostedZoneId
+        Name: !Ref pKittenDomainName
+        Type: A
+
+  LogicalID:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          -
+        CNAMEs:
+          -
+        CacheBehaviors:
+          -
+        Comment: "String"
+        ContinuousDeploymentPolicyId: "String"
+        CustomErrorResponses:
+          -
+        DefaultRootObject: "String"
+        Enabled: false
+        HttpVersion: "String"
+        IPV6Enabled: false
+        Origins:
+          -
+        PriceClass: "String"
+        Staging: false
+        WebACLId: "String"
+      Tags:
+        Tags
+    
+
+
+#Outputs:

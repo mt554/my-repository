@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Build a static website with a CloudFront Distribution
+  
+Parameters:
+
+  pKittensDomainName:
+    Description: Full sub-domain for website
+    Type: String
+  
+Resources:
+
+  rKittensBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref pKittensDomainName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  rBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref rKittensBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: PublicReadPolicy
+        Statement:
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow
+          Principal: "*"
+          Action: s3:GetObject
+          Resource: !Join [ '', [ !GetAtt rKittensBucket.Arn, '/*' ] ]
+          
+#Outputs:
